@@ -1,4 +1,4 @@
-package com.tappay
+package com.anonymous.tappay
 
 import android.os.Build
 import android.os.Bundle

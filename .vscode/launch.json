@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run iOS Simulator",
+            "request": "launch",
+            "type": "reactnative",
+            "cwd": "/Users/sahil/personal/tap-pay",
+            "enableDebug": true,
+            "platform": "ios",
+            "target": "2B724413-C963-4B89-B332-A5204F9838E4",
+            "scheme": "tappay"
+        }
+    ]
+}
