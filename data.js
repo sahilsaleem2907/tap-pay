@@ -7,29 +7,37 @@ import Card4 from "./assets/cards/card-4.svg";
 export default [
     {
         id: 0,
-        name: "American Express",
-        designation: "AMEX",
+        name: "John Adam",
+        type: "american_express",
+        exp_date: "12/24",
         content: "1234567890000000",
+        theme: 'dark',
         template: Card1
     },
     {
         id: 1,
-        name: "HDFC Bank",
-        designation: "VISA",
+        name: "John Adam",
+        type: "visa",
+        exp_date: "12/24",
+        theme: 'light',
         content: "1234567890000000",
         template: Card2
     },
     {
         id: 2,
-        name: "ICICI Bank",
-        designation: "MASTERCARD",
+        name: "John Adam",
+        type: "visa",
+        exp_date: "12/24",
+        theme: 'light',
         content: "1234567890000000",
         template: Card3
     },
     {
         id: 3,
-        name: "Yes Bank",
-        designation: "VISA",
+        name: "John Adam",
+        type: "visa",
+        exp_date: "12/24",
+        theme: 'light',
         content: "1234567890000000",
         template: Card4
     },

@@ -319,6 +319,15 @@ export const StackedCards = ({ items }) => {
                                             return SvgIcon ? <SvgIcon key={index} width={13} height={13} /> : null;
                                         })}
                                     </View>
+                                    {/* <View style={{
+                                        flexDirection: "row",
+                                        flexWrap: "norwrap",
+                                    }}>
+                                       
+                                    </View> */}
+
+                                    <StyledText style={{ ...styles.expiryContainer, ...(card.theme == 'dark' && { color: 'black' }) }}>{card.exp_date}</StyledText>
+                                    <StyledText style={{ ...styles.nameContainer, ...(card.theme == 'dark' && { color: 'black' }) }}>{card.name}</StyledText>
 
                                 </Animated.View>
                             </GestureDetector>
@@ -349,7 +358,7 @@ export const StackedCards = ({ items }) => {
                 />
             </Animated.View> */}
 
-            <TouchableOpacity
+            {items && items.length < 4 && <TouchableOpacity
                 onPress={() => console.log('Button pressed!')}
             >
                 <Animated.View style={[styles.addButton, paymentsAnimatedStyle]}>
@@ -358,7 +367,7 @@ export const StackedCards = ({ items }) => {
                     {/* </DiamondGradient> */}
                 </Animated.View>
             </TouchableOpacity>
-
+            }
 
 
             {/* </TouchableWithoutFeedback> */}
@@ -366,11 +375,11 @@ export const StackedCards = ({ items }) => {
                 <StyledText variant="semi" style={styles.semiText}>
                     Your wallet includes
                 </StyledText>
-                <View style={[styles.paymentBadges]}>
-                    <Visa width={50} height={50} />
-                    <DinerClub width={50} height={50} />
-                    <Amex width={50} height={50} />
-                    <Mastercard width={50} height={50} />
+                <View style={styles.paymentBadges}>
+                    {items.some(card => card.type?.includes("visa")) && <Visa width={50} height={50} />}
+                    {items.some(card => card.type?.includes("american_express")) && <Amex width={50} height={50} />}
+                    {items.some(card => card.type?.includes("diners_club")) && <DinerClub width={50} height={50} />}
+                    {items.some(card => card.type?.includes("mastercard")) && <Mastercard width={50} height={50} />}
                 </View>
             </Animated.View>
         </GestureHandlerRootView>
@@ -464,6 +473,18 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 188,
         left: 30,
+        transform: [{ rotate: '270deg' }],
+    },
+    nameContainer: {
+        position: 'absolute',
+        top: 210,
+        left: 157,
+        transform: [{ rotate: '270deg' }],
+    },
+    expiryContainer: {
+        position: 'absolute',
+        top: 290,
+        left: 175,
         transform: [{ rotate: '270deg' }],
     },
     name: {
