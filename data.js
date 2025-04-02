@@ -9,28 +9,28 @@ export default [
         id: 0,
         name: "American Express",
         designation: "AMEX",
-        content: "1234 5678 2345",
+        content: "1234567890000000",
         template: Card1
     },
     {
         id: 1,
         name: "HDFC Bank",
         designation: "VISA",
-        content: "1234 5678 2345",
+        content: "1234567890000000",
         template: Card2
     },
     {
         id: 2,
         name: "ICICI Bank",
         designation: "MASTERCARD",
-        content: "1234 5678 2345",
+        content: "1234567890000000",
         template: Card3
     },
     {
         id: 3,
         name: "Yes Bank",
         designation: "VISA",
-        content: "1234 5678 2345",
+        content: "1234567890000000",
         template: Card4
     },
     // {

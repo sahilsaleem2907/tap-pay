@@ -19,6 +19,7 @@ import { BlurView } from "@react-native-community/blur";
 import { DiamondGradient } from "./DiamondGradient";
 import ShimmeringText from "./ShimmeringText";
 import { SvgFromXml } from "react-native-svg";
+import { numberSvgMap } from "../utils";
 
 
 
@@ -55,7 +56,7 @@ export const StackedCards = ({ items }) => {
         if (tapped) {
             if (selectedCard === index) {
                 // Same card tapped again - animate back to original state
-                console.log("Resetting selected card");
+                // console.log("Resetting selected card");
                 tapCardProgress.value = withTiming(0, { duration: 1200 }, () => {
                     runOnJS(setSelectedCard)(null);
                     runOnJS(setBlurIntensity)(0);
@@ -64,7 +65,7 @@ export const StackedCards = ({ items }) => {
             } else {
                 if (!cardsIsAnimating) {
                     // New card tapped - animate to flipped state
-                    console.log("Selecting card:", index);
+                    // console.log("Selecting card:", index);
                     runOnJS(setBlurIntensity)(50);
                     // If there was a previously selected card, reset it first
                     if (selectedCard !== null) {
@@ -295,16 +296,35 @@ export const StackedCards = ({ items }) => {
                                     {card &&
                                         <View style={styles.card}>
                                             < card.template width={CARD_WIDTH} height={CARD_HEIGHT} style={{ pointerEvents: "none" }} />
-                                        </View>}
+                                        </View>
+                                    }
+                                    {/* <Text style={styles.content}>{card.content}</Text> */}
+                                    <View style={styles.numberContainer}>
+                                        {card.content.split("").map((char, index) => {
+                                            const SvgIcon = numberSvgMap[char];
+                                            if (index > 0 && (index + 1) % 4 === 0) {
+                                                return (
+
+                                                    <View key={index} style={{
+                                                        flexDirection: "row",
+                                                        flexWrap: "norwrap",
+                                                    }}>
+                                                        <SvgIcon key={index} width={13} height={13} />
+                                                        <View key={`space-${index}`} style={{ width: 10 }} />
+                                                    </View>
+                                                );
+                                            }
+
+
+                                            return SvgIcon ? <SvgIcon key={index} width={13} height={13} /> : null;
+                                        })}
+                                    </View>
+
                                 </Animated.View>
                             </GestureDetector>
                         );
                     })}
-                    {/* <BlurView
-                        // style={styles.absolute}
-                        blurType="dark"
-                        blurAmount={10}
-                    /> */}
+
                 </View>
                 {/* Large Container - Tappable */}
                 <GestureDetector gesture={largeContainerTap}>
@@ -321,6 +341,13 @@ export const StackedCards = ({ items }) => {
 
 
             </View>
+            {/* <Animated.View>
+                <BlurView
+                    style={styles.absolute}
+                    blurType="light"
+                    blurAmount={10}
+                />
+            </Animated.View> */}
 
             <TouchableOpacity
                 onPress={() => console.log('Button pressed!')}
@@ -331,6 +358,8 @@ export const StackedCards = ({ items }) => {
                     {/* </DiamondGradient> */}
                 </Animated.View>
             </TouchableOpacity>
+
+
 
             {/* </TouchableWithoutFeedback> */}
             <Animated.View style={[styles.paymentsContainer, paymentsAnimatedStyle]}>
@@ -354,11 +383,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     absolute: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0
+        // position: "absolute",
+        // top: 0,
+        // left: 0,
+        // bottom: 0,
+        // right: 0,
+        width,
+        height
     },
     totalAmountText: {
         fontWeight: 'bold',
@@ -426,9 +457,14 @@ const styles = StyleSheet.create({
         // elevation: 5,
         // justifyContent: "space-between",
     },
-    content: {
-        fontSize: 16,
+    numberContainer: {
+        flexDirection: "row",
+        flexWrap: "nowrap",
         color: "#333",
+        position: 'absolute',
+        top: 188,
+        left: 30,
+        transform: [{ rotate: '270deg' }],
     },
     name: {
         fontSize: 14,
