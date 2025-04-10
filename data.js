@@ -1,45 +1,47 @@
-import Card1 from "./assets/cards/card-1.svg";
-import Card2 from "./assets/cards/card-2.svg";
-import Card3 from "./assets/cards/card-3.svg";
-import Card4 from "./assets/cards/card-4.svg";
-
 
 export default [
     {
         id: 0,
-        name: "John Adam",
-        type: "american_express",
+        name: "PLATINUM",
+        gateway: "american_express",
+        type: 'american_express_platinum',
         exp_date: "12/24",
         content: "1234567890000000",
-        theme: 'dark',
-        template: Card1
+        colors: ['white', 'black'],
+        cvv: "1234"
     },
     {
         id: 1,
-        name: "John Adam",
-        type: "visa",
+        name: "MILLENIA",
+        gateway: "visa",
+        type: 'hdfc',
         exp_date: "12/24",
-        theme: 'light',
+        colors: ['white', 'black'],
         content: "1234567890000000",
-        template: Card2
+        cvv: "828",
+
     },
     {
         id: 2,
-        name: "John Adam",
-        type: "visa",
+        name: "PLATINUM",
+        gateway: "visa",
+        type: 'sbi',
         exp_date: "12/24",
-        theme: 'light',
+        colors: ['#292075', '#292075'],
         content: "1234567890000000",
-        template: Card3
+        cvv: "833",
+
     },
     {
         id: 3,
-        name: "John Adam",
-        type: "visa",
+        name: "ASHVA",
+        gateway: "visa",
+        type: 'idfc',
         exp_date: "12/24",
-        theme: 'light',
+        colors: ['black', 'black'],
         content: "1234567890000000",
-        template: Card4
+        cvv: "833",
+
     },
     // {
     //     id: 4,

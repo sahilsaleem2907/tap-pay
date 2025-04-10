@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Dimensions, TouchableWithoutFeedback, ImageBackground, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { Alert, Clipboard, Dimensions, Image, ImageBackground, Platform, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    interpolate,
     Extrapolate,
+    interpolate,
     runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
-import { Gesture, GestureDetector, GestureHandlerRootView, PanGestureHandler } from "react-native-gesture-handler";
-import Visa from "../../assets/payment/Visa.svg";
-import DinerClub from "../../assets/payment/DinersClub.svg";
-import Amex from "../../assets/payment/Amex.svg";
-import Mastercard from "../../assets/payment/Mastercard.svg";
 import ButtonBackground from "../../assets/background_button.svg";
+import Amex from "../../assets/payment/Amex.svg";
+import Chip from "../../assets/payment/chip.svg";
+import DinerClub from "../../assets/payment/DinersClub.svg";
+import Mastercard from "../../assets/payment/Mastercard.svg";
+import Visa from "../../assets/payment/Visa.svg";
 import StyledText from "../typography/StyledText";
-import { BlurView } from "@react-native-community/blur";
-import { DiamondGradient } from "./DiamondGradient";
-import ShimmeringText from "./ShimmeringText";
-import { SvgFromXml } from "react-native-svg";
 import { numberSvgMap } from "../utils";
+import { bankTypes, cardEnums } from "../utils/constants";
+import ShimmeringText from "./ShimmeringText";
 
 
 
@@ -160,19 +159,48 @@ export const StackedCards = ({ items }) => {
         };
     });
 
+
+
     return (
         <GestureHandlerRootView style={styles.rootContainer}>
             <Animated.View style={[styles.titleContainer, paymentsAnimatedStyle]}>
-                <StyledText variant="semi" style={styles.semiText}>
-                    Total Outstanding
+                <View style={{
+                    flexDirection: "row",
+                    flexWrap: "norwrap",
+                    gap: 12
+                }}>
+                    <StyledText variant="semi" style={{ ...styles.semiText, fontSize: 28 }}>
+                        Welcome
+
+                    </StyledText>
+                    <ShimmeringText
+                        text={`Sahil`}
+                        style={styles.totalAmountText}
+                        baseColor="#565656"
+                        highlightColor="#ffffff"
+                        duration={3000}
+                    />
+                </View>
+
+                <StyledText variant="semi" style={{ ...styles.semiText }}>
+                    Your banks include
                 </StyledText>
-                <ShimmeringText
-                    text="₹ 88, 279.47"
-                    style={styles.totalAmountText}
-                    baseColor="#565656"
-                    highlightColor="#ffffff"
-                    duration={3000}
-                />
+                <View style={styles.bankBadges}>
+                    {items.map((card, index) => {
+                        const IdentifierComponent = bankTypes[card.type]?.filledIdentifier;
+
+                        return IdentifierComponent ? (
+                            <Image
+                                key={index}
+                                source={IdentifierComponent}
+                                style={{ width: 100, height: 100 }}
+                                resizeMode="contain"
+                            />
+                        ) : null;
+                    })}
+                </View>
+
+
                 {/* <StyledText variant="bold" style={styles.totalAmountText}>
                     ₹ 88, 279.47
                 </StyledText> */}
@@ -287,49 +315,101 @@ export const StackedCards = ({ items }) => {
 
                         return (
                             <GestureDetector key={card.id} gesture={tapGesture}>
-                                <Animated.View style={[styles.card, animatedStyle, cardStyle(index)]} >
-                                    {/* <Text style={styles.content}>{card.content}</Text> */}
-                                    {/* <View> */}
-                                    {/* <Text style={styles.name}>{card.name}</Text>
+                                {(() => {
+                                    const isLongIcon = [cardEnums.HDFC, cardEnums.IDFC].includes(card.type);
+                                    return <Animated.View style={[styles.card, animatedStyle, cardStyle(index)]} >
+                                        {/* <Text style={styles.content}>{card.content}</Text> */}
+                                        {/* <View> */}
+                                        {/* <Text style={styles.name}>{card.name}</Text>
                                         <Text style={styles.designation}>{card.designation}</Text> */}
-                                    {/* </View> */}
-                                    {card &&
-                                        <View style={styles.card}>
-                                            < card.template width={CARD_WIDTH} height={CARD_HEIGHT} style={{ pointerEvents: "none" }} />
+                                        {/* </View> */}
+                                        {card && (
+                                            <View style={styles.card}>
+                                                {
+                                                    (() => {
+                                                        const CardComponent = bankTypes[card.type].card;
+                                                        return [cardEnums.IDFC, cardEnums.ICICI].includes(card.type) ? <Image
+                                                            source={CardComponent}
+                                                            style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+                                                            resizeMode="contain"
+                                                        /> : <CardComponent width={CARD_WIDTH} height={CARD_HEIGHT} style={{ pointerEvents: 'none' }} />;
+                                                    })()
+                                                }
+                                            </View>
+                                        )}
+
+                                        {/* <Text style={styles.content}>{card.content}</Text> */}
+                                        <View style={styles.numberContainer}>
+                                            {card.content.split("").map((char, index) => {
+                                                const SvgIcon = numberSvgMap[char];
+                                                if (index > 0 && (index + 1) % 4 === 0) {
+                                                    return (
+
+                                                        <View key={index} style={{
+                                                            flexDirection: "row",
+                                                            flexWrap: "norwrap",
+                                                        }}>
+                                                            <SvgIcon key={index} width={13} height={13} color={card.colors[0]} />
+                                                            <View key={`space-${index}`} style={{ width: 10 }} />
+                                                        </View>
+                                                    );
+                                                }
+
+
+                                                return SvgIcon ? <SvgIcon key={index} width={13} height={13} color={card.colors[0]} /> : null;
+                                            })}
+                                            {<TouchableOpacity
+                                                style={{
+                                                    paddingHorizontal: 8,
+                                                    paddingVertical: 4,
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                                    borderRadius: 4,
+                                                    marginTop: -5,
+                                                    zIndex: 9999
+                                                }}
+                                                onPress={(e) => {
+                                                    e.stopPropagation();
+                                                    Clipboard.setString(card.content);
+                                                    if (Platform.OS === 'android') {
+                                                        ToastAndroid.show('Card number copied', ToastAndroid.SHORT);
+                                                    } else {
+                                                        Alert.alert('Copied', 'Card number copied to clipboard');
+                                                    }
+                                                }}
+                                                onStartShouldSetResponder={() => true}
+                                                onResponderTerminationRequest={() => false}
+                                            >
+                                                <Text style={{ color: card.colors[0], fontSize: 12 }}>Copy</Text>
+                                            </TouchableOpacity>}
                                         </View>
-                                    }
-                                    {/* <Text style={styles.content}>{card.content}</Text> */}
-                                    <View style={styles.numberContainer}>
-                                        {card.content.split("").map((char, index) => {
-                                            const SvgIcon = numberSvgMap[char];
-                                            if (index > 0 && (index + 1) % 4 === 0) {
-                                                return (
-
-                                                    <View key={index} style={{
-                                                        flexDirection: "row",
-                                                        flexWrap: "norwrap",
-                                                    }}>
-                                                        <SvgIcon key={index} width={13} height={13} />
-                                                        <View key={`space-${index}`} style={{ width: 10 }} />
-                                                    </View>
-                                                );
-                                            }
 
 
-                                            return SvgIcon ? <SvgIcon key={index} width={13} height={13} /> : null;
-                                        })}
-                                    </View>
-                                    {/* <View style={{
-                                        flexDirection: "row",
-                                        flexWrap: "norwrap",
-                                    }}>
-                                       
-                                    </View> */}
+                                        <StyledText style={{ ...styles.nameContainer, ...(card.colors.length > 0 && { color: card.colors[0] }), ...(isLongIcon && { top: 290 }) }}>{card.name}</StyledText>
+                                        <StyledText style={{ ...styles.expiryContainer, ...(card.colors.length > 0 && { color: card.colors[0] }) }}>{card.exp_date}</StyledText>
+                                        <StyledText style={{
+                                            ...styles.cvvContainer,
+                                            ...(card.cvv.length > 3 ? { top: 220, left: 200 } : { top: 225, left: 202 }),
+                                            ...(card.colors.length > 0 && { color: card.colors[0] })
+                                        }}>{card.cvv}</StyledText>
+                                        <View style={styles.chipContainer}>
+                                            <Chip width={35} height={50} color={card.colors[0]} />
+                                        </View>
 
-                                    <StyledText style={{ ...styles.expiryContainer, ...(card.theme == 'dark' && { color: 'black' }) }}>{card.exp_date}</StyledText>
-                                    <StyledText style={{ ...styles.nameContainer, ...(card.theme == 'dark' && { color: 'black' }) }}>{card.name}</StyledText>
 
-                                </Animated.View>
+                                        <View style={{ ...styles.identifierContainer, ...(isLongIcon && { top: 40, left: -7 }) }}>
+                                            {(() => {
+                                                const IdentifierComponent = bankTypes[card.type]?.identifier;
+                                                return IdentifierComponent ? (
+                                                    <IdentifierComponent width={isLongIcon ? 90 : 35} height={50} />
+                                                ) : null;
+                                            })()}
+                                        </View>
+
+
+
+                                    </Animated.View>;
+                                })()}
+
                             </GestureDetector>
                         );
                     })}
@@ -358,15 +438,16 @@ export const StackedCards = ({ items }) => {
                 />
             </Animated.View> */}
 
-            {items && items.length < 4 && <TouchableOpacity
-                onPress={() => console.log('Button pressed!')}
-            >
-                <Animated.View style={[styles.addButton, paymentsAnimatedStyle]}>
-                    {/* <DiamondGradient> */}
-                    <ButtonBackground width={75} height={75} />
-                    {/* </DiamondGradient> */}
-                </Animated.View>
-            </TouchableOpacity>
+            {
+                items && items.length < 4 && <TouchableOpacity
+                    onPress={() => console.log('Button pressed!')}
+                >
+                    <Animated.View style={[styles.addButton, paymentsAnimatedStyle]}>
+                        {/* <DiamondGradient> */}
+                        <ButtonBackground width={75} height={75} />
+                        {/* </DiamondGradient> */}
+                    </Animated.View>
+                </TouchableOpacity>
             }
 
 
@@ -376,13 +457,13 @@ export const StackedCards = ({ items }) => {
                     Your wallet includes
                 </StyledText>
                 <View style={styles.paymentBadges}>
-                    {items.some(card => card.type?.includes("visa")) && <Visa width={50} height={50} />}
-                    {items.some(card => card.type?.includes("american_express")) && <Amex width={50} height={50} />}
-                    {items.some(card => card.type?.includes("diners_club")) && <DinerClub width={50} height={50} />}
-                    {items.some(card => card.type?.includes("mastercard")) && <Mastercard width={50} height={50} />}
+                    {items.some(card => card.gateway?.includes("visa")) && <Visa width={50} height={50} />}
+                    {items.some(card => card.gateway?.includes("american_express")) && <Amex width={50} height={50} />}
+                    {items.some(card => card.gateway?.includes("diners_club")) && <DinerClub width={50} height={50} />}
+                    {items.some(card => card.gateway?.includes("mastercard")) && <Mastercard width={50} height={50} />}
                 </View>
             </Animated.View>
-        </GestureHandlerRootView>
+        </GestureHandlerRootView >
     );
 };
 
@@ -402,13 +483,14 @@ const styles = StyleSheet.create({
     },
     totalAmountText: {
         fontWeight: 'bold',
-        fontSize: 64
+        fontSize: 28
     },
     semiText: {
         fontWeight: '700'
     },
     titleContainer: {
         alignItems: 'center',
+        gap: 15,
         top: 100
     },
     outerContainer: {
@@ -429,6 +511,14 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'space-between'
     },
+    bankBadges: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'nowrap',
+        padding: 0,
+        margin: 0,
+    },
+
     smallContainer: {
         width: CARD_WIDTH + 15,
         height: CARD_HEIGHT,
@@ -471,20 +561,41 @@ const styles = StyleSheet.create({
         flexWrap: "nowrap",
         color: "#333",
         position: 'absolute',
-        top: 188,
-        left: 30,
+        top: 170,
+        left: 0,
         transform: [{ rotate: '270deg' }],
     },
     nameContainer: {
         position: 'absolute',
-        top: 210,
-        left: 157,
+        top: 280,
+        left: 5,
         transform: [{ rotate: '270deg' }],
+        fontWeight: 'semibold'
     },
     expiryContainer: {
         position: 'absolute',
-        top: 290,
-        left: 175,
+        top: 296,
+        left: 197,
+        transform: [{ rotate: '270deg' }],
+        fontWeight: 'bold'
+    },
+    cvvContainer: {
+        position: 'absolute',
+        transform: [{ rotate: '270deg' }],
+        fontWeight: 'bold'
+    },
+    chipContainer: {
+        position: 'absolute',
+        top: 30,
+        left: 70,
+        fontWeight: 'bold',
+        transform: [{ rotate: '270deg' }],
+    },
+    identifierContainer: {
+        position: 'absolute',
+        top: 30,
+        left: 32,
+        fontWeight: 'bold',
         transform: [{ rotate: '270deg' }],
     },
     name: {
